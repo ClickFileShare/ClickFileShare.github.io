@@ -1,29 +1,15 @@
-const API_KEY = "ここにあなたのAPIキー";
+const API = "https://upload-api.takkunmcjp.workers.dev";
 
-const uploadBtn = document.getElementById("upload");
-const fileInput = document.getElementById("file");
-const result = document.getElementById("result");
+document.getElementById("send").onclick = async () => {
+  const f = document.getElementById("file").files[0];
+  if (!f) return alert("選択してください");
 
-uploadBtn.onclick = async () => {
-  if (!fileInput.files[0]) return alert("ファイルを選択してください");
+  const fd = new FormData();
+  fd.append("file", f);
 
-  const file = fileInput.files[0];
-  result.innerText = "アップロード中...";
-
-  const res = await fetch("https://api.web3.storage/upload", {
-    method: "POST",
-    headers: {
-      "Authorization": `Bearer ${API_KEY}`
-    },
-    body: file
-  });
-
+  const res = await fetch(API, { method:"POST", body:fd });
   const data = await res.json();
-  const cid = data.cid;
 
-  const url = `https://ipfs.io/ipfs/${cid}`;
-  result.innerHTML = `
-    <p>アップロード完了</p>
-    <a href="${url}" target="_blank">${url}</a>
-  `;
+  document.getElementById("link").innerHTML =
+    `<a href="${data.url}" target="_blank">${data.url}</a>`;
 };
