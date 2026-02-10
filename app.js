@@ -6,35 +6,55 @@ const fileInput = document.getElementById("file");
 const uploadBtn = document.getElementById("upload");
 const status = document.getElementById("status");
 const result = document.getElementById("result");
+const bar = document.getElementById("bar");
+const pct = document.getElementById("pct");
+const drop = document.getElementById("drop");
 
-uploadBtn.onclick = async () => {
-  if (!fileInput.files[0]) return alert("ファイルを選択してください");
+["dragenter","dragover"].forEach(e=>drop.addEventListener(e,ev=>{
+  ev.preventDefault(); drop.classList.add("drag");
+}));
+["dragleave","drop"].forEach(e=>drop.addEventListener(e,ev=>{
+  ev.preventDefault(); drop.classList.remove("drag");
+}));
+drop.addEventListener("drop", ev=>{
+  fileInput.files = ev.dataTransfer.files;
+});
 
+uploadBtn.onclick = () => {
   const file = fileInput.files[0];
+  if (!file) return alert("ファイルを選択してください");
+
   const ext = file.name.split('.').pop();
-  const safeName = crypto.randomUUID() + "." + ext;
-  const filePath = safeName;
+  const filePath = crypto.randomUUID() + "." + ext;
 
+  bar.style.width = "0%"; pct.textContent = "0%";
+  status.textContent = "アップロード中…";
+  result.textContent = "";
 
-  status.textContent = "アップロード中...";
+  const xhr = new XMLHttpRequest();
+  xhr.open("POST", `${SUPABASE_URL}/storage/v1/object/${BUCKET}/${filePath}`);
+  xhr.setRequestHeader("Authorization", `Bearer ${SUPABASE_KEY}`);
+  xhr.setRequestHeader("apikey", SUPABASE_KEY);
+  xhr.setRequestHeader("Content-Type", file.type);
 
-  const res = await fetch(`${SUPABASE_URL}/storage/v1/object/${BUCKET}/${filePath}`, {
-    method: "POST",
-    headers: {
-      "Authorization": `Bearer ${SUPABASE_KEY}`,
-      "apikey": SUPABASE_KEY,
-      "Content-Type": file.type
-    },
-    body: file
-  });
+  xhr.upload.onprogress = (e)=>{
+    if (e.lengthComputable) {
+      const p = Math.round((e.loaded / e.total) * 100);
+      bar.style.width = p + "%";
+      pct.textContent = p + "%";
+    }
+  };
 
-  if (!res.ok) {
-    status.textContent = "失敗";
-    return;
-  }
+  xhr.onload = () => {
+    if (xhr.status >= 200 && xhr.status < 300) {
+      const url = `${SUPABASE_URL}/storage/v1/object/public/${BUCKET}/${filePath}`;
+      status.textContent = "完了";
+      result.innerHTML = `<a href="${url}" target="_blank">${url}</a>`;
+    } else {
+      status.textContent = "失敗 (" + xhr.status + ")";
+    }
+  };
 
-  const url = `${SUPABASE_URL}/storage/v1/object/public/${BUCKET}/${encodeURIComponent(filePath)}`;
-
-  status.textContent = "完了";
-  result.innerHTML = `<a href="${url}" target="_blank">${url}</a>`;
+  xhr.onerror = () => status.textContent = "通信エラー";
+  xhr.send(file);
 };
