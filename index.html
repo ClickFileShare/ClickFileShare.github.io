@@ -7,14 +7,25 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <main class="card">
+    <h1>Click File Share</h1>
+    <p class="sub">Drop your file and get a share link.</p>
 
-<h1>🔥 Click Fire Share</h1>
+    <label class="drop" id="drop">
+      <input type="file" id="file" hidden>
+      <span>ここにドロップ / クリックして選択</span>
+    </label>
 
-<input type="file" id="file">
-<button id="upload">Upload</button>
+    <button id="upload" class="primary">Upload</button>
 
-<div id="status"></div>
-<div id="result"></div>
+    <div class="progress-wrap">
+      <div id="bar"></div>
+      <span id="pct">0%</span>
+    </div>
+
+    <div id="status" class="status"></div>
+    <div id="result" class="result"></div>
+  </main>
 
 <script src="app.js"></script>
 </body>
