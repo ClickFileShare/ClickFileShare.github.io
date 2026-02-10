@@ -30,7 +30,7 @@ uploadBtn.onclick = async () => {
     return;
   }
 
-  const url = `${SUPABASE_URL}/storage/v1/object/public/${BUCKET}/${filePath}`;
+  const url = `${SUPABASE_URL}/storage/v1/object/public/${BUCKET}/${encodeURIComponent(filePath)}`;
 
   status.textContent = "完了";
   result.innerHTML = `<a href="${url}" target="_blank">${url}</a>`;
