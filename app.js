@@ -11,7 +11,10 @@ uploadBtn.onclick = async () => {
   if (!fileInput.files[0]) return alert("ファイルを選択してください");
 
   const file = fileInput.files[0];
-  const filePath = `${Date.now()}-${file.name}`;
+  const ext = file.name.split('.').pop();
+  const safeName = crypto.randomUUID() + "." + ext;
+  const filePath = safeName;
+
 
   status.textContent = "アップロード中...";
 
