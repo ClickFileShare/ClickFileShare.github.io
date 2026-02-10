@@ -1,15 +1,33 @@
 const API = "https://upload-api.takkunmcjp.workers.dev";
 
-document.getElementById("send").onclick = async () => {
-  const f = document.getElementById("file").files[0];
-  if (!f) return alert("選択してください");
+const fileInput = document.getElementById("file");
+const uploadBtn = document.getElementById("upload");
+const status = document.getElementById("status");
+const result = document.getElementById("result");
+
+uploadBtn.onclick = async () => {
+  if (!fileInput.files[0]) return alert("ファイルを選択してください");
+
+  status.textContent = "アップロード中...";
+  result.textContent = "";
 
   const fd = new FormData();
-  fd.append("file", f);
+  fd.append("file", fileInput.files[0]);
 
-  const res = await fetch(API, { method:"POST", body:fd });
-  const data = await res.json();
+  try {
+    const res = await fetch(API, {
+      method: "POST",
+      body: fd
+    });
 
-  document.getElementById("link").innerHTML =
-    `<a href="${data.url}" target="_blank">${data.url}</a>`;
+    const data = await res.json();
+
+    status.textContent = "完了";
+    result.innerHTML = `
+      <p>共有リンク:</p>
+      <a href="${data.url}" target="_blank">${data.url}</a>
+    `;
+  } catch (e) {
+    status.textContent = "失敗しました";
+  }
 };
