@@ -1,20 +1,29 @@
 body {
-  font-family: sans-serif;
-  background:#111;
+  font-family: system-ui, sans-serif;
+  background:#0d1117;
   color:#fff;
   text-align:center;
   margin-top:80px;
 }
 
+input, button {
+  margin-top:10px;
+}
+
 button {
-  padding:10px 20px;
-  background:#00bfff;
+  padding:10px 18px;
   border:none;
-  border-radius:5px;
+  background:#ff4500;
+  border-radius:6px;
+  color:white;
   cursor:pointer;
 }
 
-#result {
-  margin-top:20px;
+#status {
+  margin-top:15px;
 }
-a { color:#00ffea; }
+
+a {
+  color:#00ffee;
+  word-break:break-all;
+}
